@@ -30,10 +30,10 @@ const ProductDrawer: React.FC<Props> = ({isOpen, defaultValues, onClose, onSubmi
         <ProductForm defaultValues={defaultValues} onSubmit={onSubmit}>
           {({form, submit, isLoading}) => (
             <>
-              <DrawerBody overflowY="auto" p={4}>
+              <DrawerBody overflowY="auto" padding={4}>
                 {form}
               </DrawerBody>
-              <DrawerFooter padding={2}>
+              <DrawerFooter padding={4}>
                 <Button
                   backgroundColor="primary.500"
                   color="white"
