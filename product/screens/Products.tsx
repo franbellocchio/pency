@@ -32,13 +32,21 @@ const ProductsScreen: React.FC = () => {
   const {products, filters} = useFilteredProducts({available: true});
   const {banner, title, logo, phone, description} = useTenant();
 
-  const productsByCategory = Object.entries(groupBy(products, (product) => product.category));
+  const productsByCategory = groupBy(products, (product) => product.category);
   const featuredProducts = filterBy(products, {featured: true});
 
   return (
     <>
       <Flex direction="column" height="100%">
-        <Flex as="main" backgroundColor="primary.50" direction="column" flex={1} overflowY="auto">
+        <Flex
+          as="main"
+          backgroundColor="primary.50"
+          direction="column"
+          flex={1}
+          height="100%"
+          overflowX="hidden"
+          overflowY="auto"
+        >
           <Box
             backgroundColor="primary.500"
             backgroundImage={`url(${banner})`}
@@ -51,6 +59,7 @@ const ProductsScreen: React.FC = () => {
           />
           <Box
             backgroundColor="white"
+            flex={1}
             margin="auto"
             maxWidth={{base: "100%", xl: "80em"}}
             paddingX={{base: 4, xl: 12}}
@@ -66,12 +75,12 @@ const ProductsScreen: React.FC = () => {
                   base: `auto`,
                   sm: `auto 1fr auto`,
                 }}
-                justifyContent="space-between"
               >
                 <TenantAvatar
                   gridArea="avatar"
                   logo={logo}
                   marginRight={{base: 0, sm: 4}}
+                  marginTop={{base: -6, sm: -8}}
                   title={title}
                 />
                 <Stack gridArea="information" marginTop={{base: 0, sm: 4}}>
@@ -92,9 +101,9 @@ const ProductsScreen: React.FC = () => {
                   marginTop={4}
                   spacing={4}
                 >
-                  <Link isExternal href={`tel:${phone}`}>
+                  <Link isExternal href={`whatsapp://send?phone=${phone}`}>
                     <IconButton
-                      aria-label="phone"
+                      aria-label="Enviar mensaje por WhatsApp"
                       icon="phone"
                       rounded="50%"
                       variantColor="primary"
@@ -105,7 +114,7 @@ const ProductsScreen: React.FC = () => {
             </Box>
             <Box marginBottom={4}>{filters}</Box>
             {Boolean(featuredProducts.length) && (
-              <Box marginBottom={4}>
+              <Box marginBottom={12}>
                 <Heading as="h2" fontSize={{base: "2xl", sm: "3xl"}} marginBottom={4}>
                   Destacados
                 </Heading>
@@ -118,18 +127,16 @@ const ProductsScreen: React.FC = () => {
             )}
             {Boolean(products.length) ? (
               productsByCategory.map(([category, products]) => {
-                const productsBySubcategory = Object.entries(
-                  groupBy(products, (product) => product.subcategory),
-                );
+                const productsBySubcategory = groupBy(products, (product) => product.subcategory);
 
                 return (
-                  <PseudoBox key={category} marginBottom={4}>
+                  <PseudoBox key={category} marginBottom={12}>
                     <Flex direction="column">
                       <Heading as="h2" fontSize={{base: "2xl", sm: "3xl"}}>
                         {category}
                       </Heading>
                       {productsBySubcategory.map(([subcategory, products]) => (
-                        <PseudoBox key={subcategory} mt={4}>
+                        <PseudoBox key={subcategory} marginTop={4}>
                           <Flex direction="column">
                             {subcategory && (
                               <Heading
@@ -165,10 +172,15 @@ const ProductsScreen: React.FC = () => {
                 direction="column"
                 flex={1}
                 justifyContent="center"
-                marginBottom={4}
+                marginTop={16}
               >
-                <Icon color="gray.200" marginBottom={4} name="search" size="128px" />
-                <Text color="gray.500" fontSize="lg" textAlign="center">
+                <Icon
+                  color="gray.200"
+                  fontSize={{base: 64, sm: 96}}
+                  marginBottom={4}
+                  name="search"
+                />
+                <Text color="gray.300" fontSize={{base: "md", sm: "lg"}} textAlign="center">
                   No se encontraron productos
                 </Text>
               </Flex>
@@ -177,8 +189,7 @@ const ProductsScreen: React.FC = () => {
               <Flex
                 bottom={0}
                 justifyContent="center"
-                padding={4}
-                paddingTop={0}
+                paddingBottom={4}
                 position="sticky"
                 zIndex={2}
               >
