@@ -17,6 +17,7 @@ module.exports = withSourceMaps({
       CLOUDINARY_CLOUD: process.env.CLOUDINARY_CLOUD,
       CLOUDINARY_PRESET_LOW: process.env.CLOUDINARY_PRESET_LOW,
       CLOUDINARY_PRESET_HIGH: process.env.CLOUDINARY_PRESET_HIGH,
+      CLOUDINARY_FOLDER : process.env.CLOUDINARY_FOLDER,
       FIREBASE_PRIVATE_KEY_ID: process.env.FIREBASE_PRIVATE_KEY_ID,
       FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
       FIREBASE_CLIENT_ID: process.env.FIREBASE_CLIENT_ID,
@@ -26,9 +27,7 @@ module.exports = withSourceMaps({
       FIREBASE_CLIENT_X509_CERT_URL: process.env.FIREBASE_CLIENT_X509_CERT_URL,
       FIREBASE_PRIVATE_KEY: Buffer.from(process.env.FIREBASE_PRIVATE_KEY, 'base64').toString('binary'),
       SECRET: process.env.SECRET,
-      SENTRY_DSN: process.env.SENTRY_DSN
-  },
-  webpack(config) {
-    return config
-  },
+      SENTRY_DSN: process.env.SENTRY_DSN,
+      MANTAINER_EMAIL: process.env.MANTAINER_EMAIL,
+  }
 })

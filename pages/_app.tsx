@@ -18,11 +18,15 @@ if (process.env.NODE_ENV === "production" && process.env.SENTRY_DSN) {
 
 export default class Pency extends App {
   componentDidCatch(error, errorInfo) {
-    if (process.env.NODE_ENV === "production") {
+    if (process.env.NODE_ENV === "production" && process.env.SENTRY_DSN) {
       Sentry.withScope((scope) => {
+        scope.setTag("origin", "componentDidCatch");
+
         Object.keys(errorInfo).forEach((key) => {
           scope.setExtra(key, errorInfo[key]);
         });
+
+        scope.setExtra("error", error);
 
         Sentry.captureException(error);
       });
@@ -35,7 +39,7 @@ export default class Pency extends App {
     /**
      * This help us fix a bug in embed browsers like
      * the Instagram one where the bottom bar chops
-     * the complete order button
+     * the review order button
      */
     require("viewport-units-buggyfill").init();
   }

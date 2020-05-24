@@ -6,6 +6,7 @@ import api from "./api";
 
 import {useToast} from "~/hooks/toast";
 import {useTenant} from "~/tenant/hooks";
+import {sortBy} from "~/selectors/sort";
 
 interface Props {
   initialValues: Product[];
@@ -17,19 +18,28 @@ const ProductProvider: React.FC<Props> = ({initialValues, children}) => {
   const tenant = useTenant();
   const toast = useToast();
   const [products, setProducts] = React.useState<Product[]>(
-    [...initialValues].sort((a, b) => a.title.localeCompare(b.title)),
+    sortBy(initialValues, (item) => item.title),
   );
 
   function create(product: Product) {
-    return api.create(tenant.id, product).then((product) => {
-      setProducts(products.concat(product));
+    return api
+      .create(tenant.id, product)
+      .then((product) => {
+        setProducts(products.concat(product));
 
-      toast({
-        title: "Producto creado",
-        description: "Tu producto fue creado correctamente",
-        status: "success",
+        toast({
+          title: "Producto creado",
+          description: "Tu producto fue creado correctamente",
+          status: "success",
+        });
+      })
+      .catch(() => {
+        toast({
+          title: "Error",
+          description: "Hubo un error creando el producto, refrescá la página e intentá nuevamente",
+          status: "error",
+        });
       });
-    });
   }
 
   function update(product: Product) {
@@ -49,7 +59,8 @@ const ProductProvider: React.FC<Props> = ({initialValues, children}) => {
       .catch(() => {
         toast({
           title: "Error",
-          description: "Hubo un error actualizando tu producto, es esta tu tienda?",
+          description:
+            "Hubo un error actualizando el producto, refrescá la página e intentá nuevamente",
           status: "error",
         });
       });
@@ -62,7 +73,7 @@ const ProductProvider: React.FC<Props> = ({initialValues, children}) => {
         setProducts((products) => products.filter((product) => product.id !== id));
 
         toast({
-          title: "Producto actualizado",
+          title: "Producto eliminado",
           description: "Tu producto fue eliminado correctamente",
           status: "success",
         });
@@ -70,7 +81,8 @@ const ProductProvider: React.FC<Props> = ({initialValues, children}) => {
       .catch(() => {
         toast({
           title: "Error",
-          description: "Hubo un error actualizando tu producto, es esta tu tienda?",
+          description:
+            "Hubo un error borrando el producto, refrescá la página e intentá nuevamente",
           status: "error",
         });
       });

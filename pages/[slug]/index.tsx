@@ -3,7 +3,8 @@ import React from "react";
 import fetch from "~/utils/fetch";
 import ProductsScreen from "~/product/screens/Products";
 import {Tenant} from "~/tenant/types";
-import Head from "~/app/components/Head";
+import {Provider as I18nProvider} from "~/i18n/context";
+import StoreLayout from "~/app/layouts/StoreLayout";
 
 interface Props {
   tenant: Tenant;
@@ -11,10 +12,11 @@ interface Props {
 
 const SlugIndexRoute: React.FC<Props> = ({tenant}) => {
   return (
-    <>
-      <Head track tenant={tenant} />
-      <ProductsScreen />
-    </>
+    <StoreLayout tenant={tenant}>
+      <I18nProvider>
+        <ProductsScreen />
+      </I18nProvider>
+    </StoreLayout>
   );
 };
 

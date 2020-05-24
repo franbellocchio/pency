@@ -24,7 +24,7 @@ const ProductDrawer: React.FC<Props> = ({isOpen, defaultValues, onClose, onSubmi
   const isNew = Boolean(!defaultValues?.id);
 
   return (
-    <Drawer id="product" isOpen={isOpen} placement="right" size="md" onClose={onClose}>
+    <Drawer id="product" isOpen={isOpen} placement="right" size="md" onClose={onClose} closeOnOverlayClick={false}>
       <DrawerOverlay />
       <DrawerContent>
         <DrawerCloseButton right="8px" top="8px" />
@@ -39,6 +39,7 @@ const ProductDrawer: React.FC<Props> = ({isOpen, defaultValues, onClose, onSubmi
                 <Button
                   backgroundColor="primary.500"
                   color="white"
+                  data-test-id={isNew ? `submit-new-product` : `submit-edit-product`}
                   isLoading={isLoading}
                   type="submit"
                   variantColor="primary"

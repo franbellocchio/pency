@@ -28,7 +28,7 @@ Mandame un mail a gonzalo.pozzo4@gmail.com
 ## ¿Cómo puedo correr el proyecto?
 Completá todas las variables que aparecen en `.env.template` y guardalo como `.env.development`
 
-> Todas las variables de firebase las encontramos en la configuración del proyecto de firebase y otras de una cuenta de servicio que podés encontrar en firebase yendo a `Configuración > Usuarios y permisos > Cuentas de servicio` y generando una nueva clave privada. El único campo diferente es `FIREBASE_PRIVATE_KEY` que antes de agregarlo al archivo `.env.[ambiente]` lo tenés que pasar a Base64 (podés usar cualquier convertor online). Luego el `next.config.js` se encarga de decodificarlo. Copialo con los \n, los espacios, todo, exactamente igual que como está en el archivo .json.
+> Todas las variables de firebase las encontramos en la configuración del proyecto de firebase y otras de una cuenta de servicio que podés encontrar en firebase yendo a `Configuración > Usuarios y permisos > Cuentas de servicio` y generando una nueva clave privada. El único campo diferente es `FIREBASE_PRIVATE_KEY` que antes de agregarlo al archivo `.env.[ambiente]` lo tenés que pasar a Base64 (podés usar la función `btoa` integrada en los navegadores). Luego el `next.config.js` se encarga de decodificarlo. Copialo con los \n, los espacios, todo, exactamente igual que como está en el archivo .json.
 
 Luego en consola ejecutá:
 ```bash
@@ -42,8 +42,25 @@ npm start
 ```
 > Necesitás tener un .env.[ambiente] para cada ambiente en el que vas a correr la app.
 
+## ¿Cómo correr Storybook?
+
+Storybook nos permite observar los distintos componentes visuales utilizados en el proyecto en un ambiente aislado.
+
+Ejecutá en la consola los siguientes comandos para abrir Storybook:
+
+```bash
+# Yarn
+yarn storybook
+
+# O si usas npm
+npm run storybook
+```
+
 ## Configurando Firebase
 Para esta aplicación vamos a necesitar dos cosas de Firebase, la primera va a ser configurar las reglas de firestore (las podés encontrar en el archivo `firestore.rules`) y habilitar en firebase el inicio de sesión con usuario y contraseña (lo haces en Firebase desde `Auth > Sign in methods`).
+
+## Configurando Cloudinary
+También vamos a necesitar una cuenta en Cloudinary para alojar las imágenes de la tienda. De allí vamos a necesitar el Cloudinary Cloud name para la variable `CLOUDINARY_CLOUD` del _environment_. Además vamos a tener que ir a `Settings > Upload` donde podemos configurar los presets. En principio podemos usar el default para las variables `CLOUDINARY_PRESET_LOW` y `CLOUDINARY_PRESET_HIGH`, pero tenemos que asegurarnos de setear el Signing Mode en *Unsigned*.
 
 ## Configurando el proyecto
 Una vez que tengamos nuestro `.env.[ambiente]` listo, vamos a la consola, nos paramos en la carpeta de nuestro proyecto y ejecutamos:

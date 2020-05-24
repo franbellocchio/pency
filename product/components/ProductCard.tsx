@@ -1,5 +1,14 @@
 import React from "react";
-import {Box, Text, Flex, Button, useDisclosure, ButtonGroup} from "@chakra-ui/core";
+import {
+  Box,
+  Text,
+  Flex,
+  Button,
+  useDisclosure,
+  ButtonGroup,
+  FlexProps,
+  Stack,
+} from "@chakra-ui/core";
 import LazyLoad from "react-lazy-load";
 
 import ProductOptionsDrawer from "./ProductOptionsDrawer";
@@ -7,17 +16,21 @@ import ProductImageModal from "./ProductImageModal";
 
 import {Product} from "~/product/types";
 import {useProductCartCount} from "~/cart/hooks";
+import TruncatedText from "~/ui/feedback/TruncatedText";
+import {useTranslation} from "~/hooks/translation";
 
-interface Props {
+interface Props extends FlexProps {
   product: Product;
   add: (product: Product) => void;
   remove: (id: Product["id"]) => void;
+  isRaised?: boolean;
 }
 
-const ProductCard: React.FC<Props> = ({product, remove, add}) => {
-  const {id, category, image, description, title, price, options} = product;
+const ProductCard: React.FC<Props> = ({isRaised = false, product, remove, add, ...props}) => {
+  const {id, image, description, title, price, options} = product;
   const {isOpen: isImageOpen, onToggle: toggleImage} = useDisclosure();
   const {isOpen: isOptionsOpen, onToggle: toggleOptions} = useDisclosure();
+  const {t} = useTranslation();
   const count = useProductCartCount(id);
   const hasOptions = Boolean(product.options?.length);
   const isInCart = Boolean(count);
@@ -44,17 +57,17 @@ const ProductCard: React.FC<Props> = ({product, remove, add}) => {
     <>
       <Flex
         alignItems="flex-end"
-        borderColor={isInCart ? "primary.500" : "gray.200"}
-        borderWidth="1px"
+        boxShadow={isRaised ? "lg" : "none"}
         data-test-id="product"
         direction="column"
         justifyContent="space-between"
         position="relative"
-        rounded="lg"
+        rounded="md"
         transition="transform 0.2s"
+        {...props}
       >
         {image ? (
-          <LazyLoad height={256} offsetVertical={512} width="100%">
+          <LazyLoad height={192} offsetVertical={512} width="100%">
             <Box
               backgroundImage={`url(${image})`}
               backgroundPosition="center"
@@ -62,10 +75,10 @@ const ProductCard: React.FC<Props> = ({product, remove, add}) => {
               borderBottom={1}
               borderBottomStyle="solid"
               borderColor="gray.100"
-              cursor={"pointer"}
+              cursor="pointer"
               flexShrink={0}
-              height={64}
-              roundedTop="lg"
+              height={48}
+              rounded="md"
               width="100%"
               onClick={toggleImage}
             />
@@ -78,13 +91,13 @@ const ProductCard: React.FC<Props> = ({product, remove, add}) => {
             borderBottomStyle="solid"
             borderColor="gray.100"
             flexShrink={0}
-            height={64}
+            height={48}
             justifyContent="center"
-            roundedTop="lg"
+            rounded="md"
             width="100%"
           >
-            <Text color="gray.400" fontSize="2xl">
-              sin foto
+            <Text color="gray.500" fontSize="2xl">
+              {t("productCard.noImage")}
             </Text>
           </Flex>
         )}
@@ -94,31 +107,54 @@ const ProductCard: React.FC<Props> = ({product, remove, add}) => {
           flexDirection="column"
           height="100%"
           justifyContent="space-between"
-          p={4}
+          padding={isRaised ? {base: 2, sm: 4} : 0}
+          paddingTop={2}
           width="100%"
         >
-          <Flex direction="column">
-            <Text display="block" fontSize="lg" fontWeight="semibold" lineHeight="normal" mb={2}>
+          <Stack marginBottom={2} spacing={{base: 1, sm: 2}}>
+            <Text
+              display="block"
+              fontSize={{base: "sm", sm: "lg"}}
+              fontWeight={500}
+              lineHeight="normal"
+            >
               {title}
             </Text>
             {description && (
-              <Text color="gray.500" mb={2}>
+              <TruncatedText
+                color="gray.500"
+                fontSize={{base: "xs", sm: "md"}}
+                fontWeight="normal"
+                lines={3}
+              >
                 {description}
-              </Text>
+              </TruncatedText>
             )}
-          </Flex>
-          <Flex alignItems="flex-end">
-            <Text color="primary.500" flex={1} fontSize="lg" fontWeight="bold" letterSpacing="wide">
+          </Stack>
+          <Flex alignItems="center">
+            <Text
+              color="green.500"
+              flex={1}
+              fontSize={{base: "sm", sm: "md"}}
+              fontWeight={500}
+              lineHeight={1}
+            >
               ${price}
             </Text>
             <Box position="relative">
               {!hasOptions && isInCart ? (
                 <ButtonGroup>
-                  <Button onClick={handleRemove}>-</Button>
-                  <Button onClick={handleAdd}>+</Button>
+                  <Button fontWeight={500} size="xs" onClick={handleRemove}>
+                    -
+                  </Button>
+                  <Button fontWeight={500} size="xs" onClick={handleAdd}>
+                    +
+                  </Button>
                 </ButtonGroup>
               ) : (
-                <Button onClick={handleAdd}>Agregar</Button>
+                <Button fontWeight={500} size="xs" onClick={handleAdd}>
+                  {t("productCard.add")}
+                </Button>
               )}
               {isInCart && (
                 <Flex
@@ -127,13 +163,15 @@ const ProductCard: React.FC<Props> = ({product, remove, add}) => {
                   border="2px solid white"
                   borderRadius="50%"
                   color="white"
-                  fontSize="16px"
-                  height="26px"
+                  fontSize="10px"
+                  fontWeight="500"
+                  height="20px"
                   justifyContent="center"
+                  lineHeight={1}
                   position="absolute"
-                  right="-13px"
-                  top="-13px"
-                  width="26px"
+                  right="-10px"
+                  top="-10px"
+                  width="20px"
                   zIndex={1}
                 >
                   {count}

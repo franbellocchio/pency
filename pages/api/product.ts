@@ -56,12 +56,7 @@ const api = {
       .doc(tenant)
       .collection("products")
       .get()
-      .then((snapshot) => snapshot.docs.map((doc) => ({id: doc.id, ...(doc.data() as Product)})))
-      .then((products) => {
-        cache.set(tenant, products);
-
-        return products;
-      }),
+      .then((snapshot) => snapshot.docs.map((doc) => ({...(doc.data() as Product), id: doc.id}))),
   create: (tenant: Tenant["id"], product: Product) =>
     database
       .collection("tenants")
@@ -71,13 +66,8 @@ const api = {
       .then((snapshot) => ({...product, id: snapshot.id})),
   remove: (tenant: Tenant["id"], product: Product["id"]) =>
     database.collection("tenants").doc(tenant).collection("products").doc(product).delete(),
-  update: (tenant: Tenant["id"], product: Product) =>
-    database
-      .collection("tenants")
-      .doc(tenant)
-      .collection("products")
-      .doc(product.id)
-      .update(product),
+  update: (tenant: Tenant["id"], {id, ...product}: Product) =>
+    database.collection("tenants").doc(tenant).collection("products").doc(id).update(product),
 };
 
 export default async (req: Request, res) => {
@@ -113,15 +103,21 @@ export default async (req: Request, res) => {
 
     if (!tenant) return res.status(304).end();
 
-    return auth.verifyIdToken(token).then(({uid}) => {
-      if (uid !== tenant) return res.status(403).end();
+    return auth
+      .verifyIdToken(token)
+      .then(({uid}) => {
+        if (uid !== tenant) return res.status(403).end();
 
-      return api.create(tenant, product).then((product) => {
-        cache.delete(tenant);
+        return api
+          .create(tenant, product)
+          .then((product) => {
+            cache.delete(tenant);
 
-        return res.status(200).json(product);
-      });
-    });
+            return res.status(200).json(product);
+          })
+          .catch(() => res.status(400).end("Hubo un error creando el producto"));
+      })
+      .catch(() => res.status(401).end("La sesión expiró, volvé a iniciar sesión para continuar"));
   }
 
   if (req.method === "PATCH") {
@@ -133,15 +129,21 @@ export default async (req: Request, res) => {
 
     if (!tenant) return res.status(304).end();
 
-    return auth.verifyIdToken(token).then(({uid}) => {
-      if (uid !== tenant) return res.status(403).end();
+    return auth
+      .verifyIdToken(token)
+      .then(({uid}) => {
+        if (uid !== tenant) return res.status(403).end();
 
-      return api.update(tenant, product).then(() => {
-        cache.delete(tenant);
+        return api
+          .update(tenant, product)
+          .then(() => {
+            cache.delete(tenant);
 
-        return res.status(200).json(product);
-      });
-    });
+            return res.status(200).json(product);
+          })
+          .catch(() => res.status(400).end("Hubo un error actualizando el producto"));
+      })
+      .catch(() => res.status(401).end("La sesión expiró, volvé a iniciar sesión para continuar"));
   }
 
   if (req.method === "DELETE") {
@@ -152,15 +154,21 @@ export default async (req: Request, res) => {
 
     if (!tenant) return res.status(304).end();
 
-    return auth.verifyIdToken(token).then(({uid}) => {
-      if (uid !== tenant) return res.status(403).end();
+    return auth
+      .verifyIdToken(token)
+      .then(({uid}) => {
+        if (uid !== tenant) return res.status(403).end();
 
-      return api.remove(tenant, product).then(() => {
-        cache.delete(tenant);
+        return api
+          .remove(tenant, product)
+          .then(() => {
+            cache.delete(tenant);
 
-        return res.status(200).json({success: true});
-      });
-    });
+            return res.status(200).json({success: true});
+          })
+          .catch(() => res.status(400).end("Hubo un error borrando el producto"));
+      })
+      .catch(() => res.status(401).end("La sesión expiró, volvé a iniciar sesión para continuar"));
   }
 
   return res.status(304).end();

@@ -56,7 +56,6 @@ const api = {
                   .collection("tenants")
                   .doc(user.uid)
                   .create({
-                    id: user.uid,
                     slug,
                     ...DEFAULT_TENANT,
                   }),
@@ -75,8 +74,18 @@ const api = {
           ? Promise.reject({statusText: "La tienda no existe", status: 404})
           : snapshot.docs[0],
       )
-      .then((doc) => ({id: doc.id, ...(doc.data() as Tenant)})),
-  update: async (tenant: Tenant) => database.collection("tenants").doc(tenant.id).update(tenant),
+      .then((doc) => ({...(doc.data() as Tenant), id: doc.id})),
+  list: async (): Promise<Tenant[]> =>
+    database
+      .collection("tenants")
+      .get()
+      .then((snapshot) =>
+        snapshot.empty
+          ? Promise.reject({statusText: "No hay tiendas", status: 404})
+          : snapshot.docs,
+      )
+      .then((docs) => docs.map((doc) => ({...(doc.data() as Tenant), id: doc.id}))),
+  update: async ({id, ...tenant}: Tenant) => database.collection("tenants").doc(id).update(tenant),
 };
 
 export default async (req, res) => {
@@ -85,7 +94,18 @@ export default async (req, res) => {
       query: {slug},
     } = req as GetRequest;
 
-    if (!slug) return res.status(304).end();
+    if (!slug) {
+      return api
+        .list()
+        .then((tenants) => {
+          tenants.forEach((tenant) => {
+            cache.set(tenant.slug, tenant);
+          });
+
+          return res.status(200).json(tenants);
+        })
+        .catch(({status, statusText}) => res.status(status).end(statusText));
+    }
 
     const cached = cache.get(slug);
 
@@ -126,15 +146,21 @@ export default async (req, res) => {
 
     if (!tenant) return res.status(304).end();
 
-    return auth.verifyIdToken(token).then(({uid}) => {
-      if (uid !== tenant.id) return res.status(403).end();
+    return auth
+      .verifyIdToken(token)
+      .then(({uid}) => {
+        if (uid !== tenant.id) return res.status(403).end();
 
-      return api.update(tenant).then(() => {
-        cache.delete(tenant.slug);
+        return api
+          .update(tenant)
+          .then(() => {
+            cache.delete(tenant.slug);
 
-        return res.status(200).json(tenant);
-      });
-    });
+            return res.status(200).json(tenant);
+          })
+          .catch(() => res.status(400).end("Hubo un error actualizando la tienda"));
+      })
+      .catch(() => res.status(401).end("La sesión expiró, volvé a iniciar sesión para continuar"));
   }
 
   return res.status(304).end();
