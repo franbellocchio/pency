@@ -1,20 +1,59 @@
 {
-  "filters": {
+  "common": {
+    "error": "Error",
+    "email": "E-mail",
+    "password": "Contraseña",
+    "total": "Total",
+    "featured": "Destacado",
     "categories": "Categorías",
+    "noImage": "Sin foto",
+    "add": "Agregar",
+    "goBack": "Volver",
+    "help": "Ayuda",
+    "exit": "Salir",
+    "products": "Productos",
+    "shop": "Tienda",
+    "options": "Opciones",
+    "next": "Siguiente",
+    "items": "Items"
+  },
+  "form": {
+    "required": "Este campo es requerido",
+    "invalidEmail": "No es un email válido"
+  },
+  "filters": {
     "search": "Buscar..."
+  },
+  "admin": {
+    "preview": "Ver tienda",
+    "empty": "No se encontraron productos"
   },
   "cart": {
     "yourCart": "Tu carrito",
-    "total": "Total",
-    "complete": "Completar pedido en WhatsApp"
+    "completeOrder": "Completá tu pedido",
+    "completeOnWhatsApp": "Completar pedido en WhatsApp"
   },
   "products": {
-    "featured": "Destacados",
     "empty": "No se encontraron productos",
-    "check": "Revisar pedido"
+    "review": "Tu pedido"
   },
-  "productCard": {
-    "noImage": "Sin foto",
-    "add": "Agregar"
+  "auth": {
+    "resetPasswordForm": {
+      "resetError": "Hubo un error al reiniciar la contraseña, intentá de nuevo mas tarde",
+      "title": "Restablecé tu contraseña",
+      "description": "Ingresá tu mail y te enviaremos intrucciones sobre como restrablecerla.",
+      "sendInstructions": "Enviar instrucciones"
+    },
+    "resetPasswordSuccess": {
+      "title": "Listo! Te enviamos las instrucciones",
+      "description": "Te llegará un mail que tiene un link para restablecer tu contraseña. Si no aparece en algunos minutos, revisa la carpeta spam.",
+      "contactUsAt": "En caso que tengas algún problema en el proceso escribimos a",
+      "emailTitle": "Consulta por Pency"
+    },
+    "login": {
+      "signInError": "Hubo un error al iniciar sesión, verificá las credenciales",
+      "recoverPassword": "Recuperar contraseña",
+      "signIn": "Ingresar"
+    }
   }
 }

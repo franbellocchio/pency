@@ -4,7 +4,7 @@ import produce from "immer";
 
 import {Product} from "../product/types";
 
-import {CartItem, Context, State, Actions, Cart} from "./types";
+import {CartItem, Context, State, Actions, Cart, CheckoutFields} from "./types";
 import {getSummary, getMessage} from "./selectors";
 
 import {useAnalytics} from "~/analytics/hooks";
@@ -19,7 +19,7 @@ const CartContext = React.createContext({} as Context);
 
 const CartProvider = ({children}: Props) => {
   const log = useAnalytics();
-  const {message, phone} = useTenant();
+  const {phone} = useTenant();
   const [cart, setCart] = React.useState<Cart>({});
   const items = React.useMemo(() => [].concat(...Object.values(cart)), [cart]);
 
@@ -40,7 +40,6 @@ const CartProvider = ({children}: Props) => {
             product: product.id,
             count: 1,
             category: product.category,
-            subcategory: product.subcategory,
             price: getPrice(product),
             title: product.title,
             description: product.description,
@@ -54,7 +53,6 @@ const CartProvider = ({children}: Props) => {
               id: product.id,
               product: product.id,
               category: product.category,
-              subcategory: product.subcategory,
               description: product.description,
               title: product.title,
               price: product.price,
@@ -82,7 +80,7 @@ const CartProvider = ({children}: Props) => {
     );
   }
 
-  function checkout() {
+  function checkout(fields?: CheckoutFields) {
     log("cart_checkout", {
       content_type: "cart",
       description: getSummary(items),
@@ -90,7 +88,7 @@ const CartProvider = ({children}: Props) => {
     });
 
     window.open(
-      `https://wa.me/${phone}?text=${encodeURIComponent(getMessage(message, items))}`,
+      `https://wa.me/${phone}?text=${encodeURIComponent(getMessage(items, fields))}`,
       "_blank",
     );
   }

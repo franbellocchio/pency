@@ -1,9 +1,11 @@
 import React from "react";
-import {Icon, Input, Flex, InputGroup, InputLeftElement, Divider, Select} from "@chakra-ui/core";
+import {Icon, Flex, InputGroup, InputLeftElement, Divider} from "@chakra-ui/core";
 
 import ProductContext from "./context";
 import {Product} from "./types";
 
+import Input from "~/ui/inputs/Input";
+import Select from "~/ui/inputs/Select";
 import {extractUniqueBy, filterBy} from "~/selectors/filter";
 import {sort} from "~/selectors/sort";
 import {groupBy} from "~/selectors/group";
@@ -28,15 +30,12 @@ export function useProductActions() {
 export function useProductCategories() {
   const products = useProducts();
 
-  return {
-    categories: sort(extractUniqueBy(products, (product) => product.category)),
-    subcategories: sort(extractUniqueBy(products, (product) => product.subcategory)),
-  };
+  return sort(extractUniqueBy(products, (product) => product.category));
 }
 
 export function useFilteredProducts(filters: Partial<Product> = {}) {
   const products = useProducts();
-  const {t} = useTranslation();
+  const t = useTranslation();
   const [query, setQuery] = React.useState("");
   const productsBySearch = filterBy(products, {title: query, ...filters});
   const categories = groupBy(products, (product) => product.category).map(([category, products]): [
@@ -62,8 +61,8 @@ export function useFilteredProducts(filters: Partial<Product> = {}) {
           flex={{base: 1, sm: "inherit"}}
           fontWeight="500"
           height="100%"
-          maxWidth={{base: "100%", sm: "220px"}}
-          placeholder={t("filters.categories")}
+          maxWidth={{base: "100%", sm: "140px"}}
+          placeholder={t("common.categories")}
           value=""
           variant="unstyled"
           width="auto"
@@ -86,6 +85,7 @@ export function useFilteredProducts(filters: Partial<Product> = {}) {
             top="inherit"
           />
           <Input
+            paddingLeft={10}
             placeholder={t("filters.search")}
             value={query}
             variant="unstyled"

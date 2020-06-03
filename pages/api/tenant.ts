@@ -1,6 +1,6 @@
 import {Tenant} from "~/tenant/types";
 import {database, auth} from "~/firebase/admin";
-import {DEFAULT_TENANT} from "~/tenant/constants";
+import {parseTenant, formatTenant} from "~/tenant/selectors";
 
 interface Request {
   method: "GET" | "POST" | "PATCH";
@@ -52,13 +52,7 @@ const api = {
                 password,
               })
               .then((user) =>
-                database
-                  .collection("tenants")
-                  .doc(user.uid)
-                  .create({
-                    slug,
-                    ...DEFAULT_TENANT,
-                  }),
+                database.collection("tenants").doc(user.uid).create(formatTenant({slug})),
               )
               .catch(({errorInfo}) => Promise.reject({statusText: errorInfo.message, status: 400}))
           : Promise.reject({statusText: "Esa tienda ya existe", status: 409}),
@@ -74,7 +68,8 @@ const api = {
           ? Promise.reject({statusText: "La tienda no existe", status: 404})
           : snapshot.docs[0],
       )
-      .then((doc) => ({...(doc.data() as Tenant), id: doc.id})),
+      .then((doc) => ({...(doc.data() as Tenant), id: doc.id}))
+      .then(parseTenant),
   list: async (): Promise<Tenant[]> =>
     database
       .collection("tenants")
@@ -84,8 +79,10 @@ const api = {
           ? Promise.reject({statusText: "No hay tiendas", status: 404})
           : snapshot.docs,
       )
-      .then((docs) => docs.map((doc) => ({...(doc.data() as Tenant), id: doc.id}))),
-  update: async ({id, ...tenant}: Tenant) => database.collection("tenants").doc(id).update(tenant),
+      .then((docs) => docs.map((doc) => ({...(doc.data() as Tenant), id: doc.id})))
+      .then((tenants) => tenants.map(parseTenant)),
+  update: async ({id, ...tenant}: Tenant) =>
+    database.collection("tenants").doc(id).update(formatTenant(tenant)),
 };
 
 export default async (req, res) => {

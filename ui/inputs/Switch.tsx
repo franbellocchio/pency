@@ -3,7 +3,7 @@ import {Switch, SwitchProps} from "@chakra-ui/core";
 
 interface Props extends Omit<SwitchProps, "onChange"> {
   checked?: boolean;
-  onChange: (value: boolean) => void;
+  onChange?: (value: boolean) => void;
 }
 
 const SwitchInput: React.FC<Props> = ({checked, onChange, ...props}) => {
@@ -11,7 +11,16 @@ const SwitchInput: React.FC<Props> = ({checked, onChange, ...props}) => {
     onChange(event.target.checked);
   }
 
-  return <Switch isChecked={checked} value={checked} onChange={handleChange} {...props} />;
+  return (
+    <Switch
+      color="primary"
+      isChecked={checked}
+      lineHeight="normal"
+      value={checked}
+      onChange={handleChange}
+      {...props}
+    />
+  );
 };
 
 export default SwitchInput;

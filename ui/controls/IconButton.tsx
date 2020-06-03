@@ -1,25 +1,33 @@
 import React from "react";
-import {Button, Flex, ButtonProps, Box} from "@chakra-ui/core";
+import {Button, ButtonProps, Box} from "@chakra-ui/core";
 
-interface Props extends Omit<ButtonProps, "leftIcon" | "rightIcon"> {
+interface Props extends Omit<ButtonProps, "leftIcon" | "rightIcon" | "children"> {
   leftIcon?: React.ElementType;
   rightIcon?: React.ElementType;
+  children?: React.ReactNode;
+  isCollapsable?: boolean;
 }
 
-const IconButton: React.FC<Props> = ({leftIcon = null, rightIcon = null, children, ...props}) => {
+const IconButton: React.FC<Props> = ({
+  leftIcon = null,
+  rightIcon = null,
+  children = null,
+  isCollapsable = false,
+  ...props
+}) => {
   return (
-    <Button {...props}>
-      <Flex alignItems="center">
-        {leftIcon && React.createElement(leftIcon)}
+    <Button alignItems="center" display="flex" {...props}>
+      {leftIcon && React.createElement(leftIcon)}
+      {children && (
         <Box
-          display={{base: "none", sm: "block"}}
+          display={{base: isCollapsable ? "none" : "block", sm: "block"}}
           marginLeft={leftIcon ? 2 : 0}
           marginRight={rightIcon ? 2 : 0}
         >
           {children}
         </Box>
-        {rightIcon && React.createElement(rightIcon)}
-      </Flex>
+      )}
+      {rightIcon && React.createElement(rightIcon)}
     </Button>
   );
 };

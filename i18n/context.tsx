@@ -5,14 +5,8 @@ import LanguageDetector from "i18next-browser-languagedetector";
 
 import dictionaries from "./dictionaries";
 
-const I18nContext = React.createContext({});
-
 const I18nProvider: React.FC = ({children}) => {
   const [isLoading, setLoading] = React.useState(true);
-
-  const state = {
-    dictionaries,
-  };
 
   React.useEffect(() => {
     i18n
@@ -30,7 +24,7 @@ const I18nProvider: React.FC = ({children}) => {
 
   if (isLoading) return null;
 
-  return <I18nContext.Provider value={{state}}>{children}</I18nContext.Provider>;
+  return <>{children}</>;
 };
 
-export {I18nProvider as Provider, I18nContext as default};
+export {I18nProvider as Provider};
