@@ -1,22 +1,31 @@
 import React from "react";
 import {Grid, Stack, Text, Box, BoxProps} from "@chakra-ui/core";
 
-import {Tenant} from "../types";
+import {ClientTenant} from "../types";
 
 import TenantAvatar from "./TenantAvatar";
 
 import SocialLinks from "~/ui/list/SocialLinks";
-import Content from "~/ui/structure/Content";
+import MarkerIcon from "~/ui/icons/Marker";
+import Link from "~/ui/controls/Link";
 
 interface Props extends BoxProps {
   tenant: Pick<
-    Tenant,
-    "banner" | "facebook" | "instagram" | "twitter" | "logo" | "title" | "description" | "phone"
+    ClientTenant,
+    | "banner"
+    | "facebook"
+    | "instagram"
+    | "twitter"
+    | "logo"
+    | "title"
+    | "description"
+    | "phone"
+    | "location"
   >;
 }
 
 const TenantHeader: React.FC<Props> = ({
-  tenant: {banner, facebook, instagram, twitter, logo, title, description, phone},
+  tenant: {banner, facebook, instagram, twitter, logo, title, description, phone, location},
   ...props
 }) => (
   <Box {...props}>
@@ -28,9 +37,10 @@ const TenantHeader: React.FC<Props> = ({
       backgroundSize="cover"
       height={{base: 24, sm: 56}}
       minHeight={{base: 24, sm: 56}}
+      roundedBottom={{base: "none", sm: "lg"}}
       width="100%"
     />
-    <Content paddingX={4}>
+    <Box paddingX={4}>
       <Grid
         gridTemplateAreas={{
           base: `"avatar links" "information information"`,
@@ -50,12 +60,27 @@ const TenantHeader: React.FC<Props> = ({
           title={title}
         />
         <Stack gridArea="information" marginTop={{base: 1, sm: 4}} spacing={{base: 0, sm: 1}}>
-          <Text fontSize={{base: "xl", sm: "3xl"}} fontWeight="bold" lineHeight="normal">
+          <Text as="h1" fontSize={{base: "xl", sm: "3xl"}} fontWeight="bold" lineHeight="normal">
             {title}
           </Text>
           <Text color="gray.500" fontSize={{base: "sm", sm: "md"}} lineHeight="tall">
             {description}
           </Text>
+          {location && (
+            <Stack isInline alignItems="center" color="primary.500" marginTop={1} spacing={1}>
+              <MarkerIcon minWidth={4} size={4} />
+              <Link
+                isExternal
+                href={`https://www.google.com.ar/maps/place/${location.address}/@${location.coordinates.lat},${location.coordinates.lng}`}
+              >
+                <Text fontSize={{base: "sm", sm: "md"}} lineHeight="tall">
+                  {location.address.length > 50
+                    ? location.address.slice(0, 47).concat("...")
+                    : location.address}
+                </Text>
+              </Link>
+            </Stack>
+          )}
         </Stack>
         <SocialLinks
           facebook={facebook}
@@ -67,7 +92,7 @@ const TenantHeader: React.FC<Props> = ({
           whatsapp={phone}
         />
       </Grid>
-    </Content>
+    </Box>
   </Box>
 );
 

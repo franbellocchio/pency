@@ -5,7 +5,7 @@ import {CartItem} from "../types";
 import {getTotal, getCount} from "../selectors";
 
 import Button from "~/ui/controls/Button";
-import {useTranslation} from "~/hooks/translation";
+import {useTranslation, usePrice} from "~/i18n/hooks";
 
 interface Props extends ButtonProps {
   items: CartItem[];
@@ -15,6 +15,7 @@ const SummaryButton: React.FC<Props> = ({children, items, ...props}) => {
   const total = getTotal(items);
   const count = getCount(items);
   const t = useTranslation();
+  const p = usePrice();
 
   return (
     <Button
@@ -39,11 +40,11 @@ const SummaryButton: React.FC<Props> = ({children, items, ...props}) => {
           variantColor="primary"
         >
           <Text textTransform="lowercase">
-            {count} {t("common.items")}
+            {count} {t("common.item", {count})}
           </Text>
         </Badge>
         <Text flex={1} justifySelf="flex-end" textAlign="right">
-          ${total}
+          {p(total)}
         </Text>
       </Stack>
     </Button>

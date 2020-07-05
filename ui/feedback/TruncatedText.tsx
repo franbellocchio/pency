@@ -6,17 +6,14 @@ interface Props extends BoxProps {
 }
 
 const TruncatedText: React.FC<Props> = ({lines, children, ...props}) => {
-  const [isToggled, toggle] = React.useState(false);
-
   return (
     <Text
       overflow="hidden"
       style={{
-        display: isToggled ? "inherit" : "-webkit-box",
+        display: "-webkit-box",
         WebkitBoxOrient: "vertical",
         WebkitLineClamp: lines,
       }}
-      onClick={() => toggle(!isToggled)}
       {...props}
     >
       {children}

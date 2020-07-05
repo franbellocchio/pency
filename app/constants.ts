@@ -7,7 +7,7 @@ export const META = {
   appleicon: "/logo192.jpg",
   keywords: "tienda, online, fácil, delivery, compra, venta",
   author: "Pency",
-  twitter: "pencyapp",
+  twitter: "@pencyapp",
   url: "https://pency.app",
   banner: {
     url: "/og-image.jpg",
@@ -18,14 +18,14 @@ export const META = {
 };
 
 export const COLORS = {
-  Amarillo: "yellow",
-  Azul: "blue",
-  Cyan: "cyan",
-  Gris: "gray",
-  Naranja: "orange",
-  Purpura: "purple",
-  Rojo: "red",
-  Rosa: "pink",
-  Turquesa: "teal",
-  Verde: "green",
+  yellow: "Amarillo",
+  blue: "Azul",
+  cyan: "Cyan",
+  gray: "Gris",
+  orange: "Naranja",
+  purple: "Purpura",
+  red: "Rojo",
+  pink: "Rosa",
+  teal: "Turquesa",
+  green: "Verde",
 };

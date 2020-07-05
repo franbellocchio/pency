@@ -1,38 +1,67 @@
-import {CartItem, CheckoutFields} from "./types";
+import {CartItem} from "./types";
+
+import {Field} from "~/tenant/types";
+import {getVariantsString, getVariantsPrice} from "~/product/selectors";
+import {formatPrice} from "~/i18n/selectors";
 
 export function getTotal(items: CartItem[]): number {
-  return items.reduce((total, item) => total + item.price * item.count, 0);
+  return items.reduce(
+    (total, item) => total + (item.product.price + getVariantsPrice(item.variants)) * item.count,
+    0,
+  );
 }
 
 export function getCount(items: CartItem[]): number {
   return items.reduce((total, item) => total + item.count, 0);
 }
 
-export function getSummary(items: CartItem[]): string {
-  return `[${getTotal(items)}] ${items.map(({title}) => title).join(", ")}`;
+function _getFields(fields: Field[]) {
+  if (!fields) return "";
+
+  return fields
+    .filter(({title, value}) => title && value)
+    .map(({title, value}) => `${title}: *${value}*`)
+    .join("\n");
 }
 
-export function getItems(items: CartItem[]): string {
+function _getPreferenceFooter(preference?: string) {
+  if (!preference) return "";
+
+  return `----------
+
+Este es tu link de pago. _Una vez realizado envianos el número de operación_.
+${preference}`;
+}
+
+function _getItems(items: CartItem[]): string {
   return items
     .map(
-      ({category, title, options, price, count}) =>
-        `* ${[`[${category}]`, title, options, count > 1 ? `(X${count})` : "", `$${price * count}`]
+      ({product, count, variants}) =>
+        `— ${[
+          count > 1 ? `*[ ${count} ]*` : "",
+          product.title,
+          variants ? `_${getVariantsString(variants)}_` : "",
+          `> *${formatPrice((product.price + getVariantsPrice(variants)) * count)}*`,
+        ]
           .filter(Boolean)
-          .join(" - ")}`,
+          .join(" ")}`,
     )
     .join("\n");
 }
 
-export function getFields(fields: CheckoutFields) {
-  if (!fields) return "";
-
-  return Object.entries(fields)
-    .map(([title, value]) => `${title}: *${value}*`)
-    .join("\n");
-}
-
-export function getMessage(items: CartItem[], fields?: CheckoutFields): string {
+export function getMessage(
+  items: CartItem[],
+  orderId: string,
+  fields?: Field[],
+  preference?: string,
+): string {
   return (
-    getItems(items) + `\n\nTotal: $${getTotal(items)}` + (fields ? "\n\n" + getFields(fields) : "")
+    `PEDIDO: *${orderId}*` +
+    "\n\n" +
+    _getItems(items) +
+    "\n\n" +
+    `*Total: ${formatPrice(getTotal(items))}*` +
+    (fields ? "\n\n" + _getFields(fields) : "") +
+    (preference ? `\n\n${_getPreferenceFooter(preference)}` : "")
   );
 }

@@ -14,9 +14,10 @@ import {
   Text,
 } from "@chakra-ui/core";
 
-import ProductsAdminScreen from "~/product/screens/Admin";
+import HomeAdminScreen from "./Home";
+
+import ProductsAdminScreen from "~/product/screens/Admin/Admin";
 import TenantAdminScreen from "~/tenant/screens/Admin";
-import {Tenant} from "~/tenant/types";
 import BoxIcon from "~/ui/icons/Box";
 import SlidersIcon from "~/ui/icons/Sliders";
 import HelpCircleIcon from "~/ui/icons/HelpCircle";
@@ -24,14 +25,13 @@ import LogOutIcon from "~/ui/icons/LogOut";
 import IconButton from "~/ui/controls/IconButton";
 import {useSession} from "~/session/hooks";
 import Content from "~/ui/structure/Content";
-import {useTranslation} from "~/hooks/translation";
+import {useTranslation} from "~/i18n/hooks";
+import HomeIcon from "~/ui/icons/Home";
+import {useTenant} from "~/tenant/hooks";
 
-interface Props {
-  tenant: Tenant;
-}
-
-const AdminScreen: React.FC<Props> = ({tenant}) => {
+const AdminScreen: React.FC = () => {
   const {signOut} = useSession();
+  const tenant = useTenant();
   const t = useTranslation();
 
   return (
@@ -104,7 +104,11 @@ const AdminScreen: React.FC<Props> = ({tenant}) => {
         >
           <Content paddingX={4}>
             <Box height="100%" width="100%">
-              <TabList border="none" height={16}>
+              <TabList border="none" height={16} overflowX="auto">
+                <Tab fontSize="md" fontWeight={500}>
+                  <HomeIcon marginRight={2} />
+                  <Text>{t("common.home")}</Text>
+                </Tab>
                 <Tab fontSize="md" fontWeight={500}>
                   <BoxIcon marginRight={2} />
                   <Text>{t("common.products")}</Text>
@@ -119,6 +123,9 @@ const AdminScreen: React.FC<Props> = ({tenant}) => {
         </Stack>
         <Box>
           <TabPanels>
+            <TabPanel>
+              <HomeAdminScreen />
+            </TabPanel>
             <TabPanel>
               <ProductsAdminScreen />
             </TabPanel>

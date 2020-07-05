@@ -9,7 +9,7 @@ import Select from "~/ui/inputs/Select";
 import {extractUniqueBy, filterBy} from "~/selectors/filter";
 import {sort} from "~/selectors/sort";
 import {groupBy} from "~/selectors/group";
-import {useTranslation} from "~/hooks/translation";
+import {useTranslation} from "~/i18n/hooks";
 
 export function useProducts() {
   const {
@@ -21,10 +21,10 @@ export function useProducts() {
 
 export function useProductActions() {
   const {
-    actions: {create, update, remove},
+    actions: {create, update, remove, bulk},
   } = React.useContext(ProductContext);
 
-  return {create, update, remove};
+  return {create, update, remove, bulk};
 }
 
 export function useProductCategories() {
@@ -33,11 +33,14 @@ export function useProductCategories() {
   return sort(extractUniqueBy(products, (product) => product.category));
 }
 
-export function useFilteredProducts(filters: Partial<Product> = {}) {
+export function useFilteredProducts() {
   const products = useProducts();
   const t = useTranslation();
   const [query, setQuery] = React.useState("");
-  const productsBySearch = filterBy(products, {title: query, ...filters});
+  const productsBySearch = React.useMemo(() => filterBy(products, {title: query}), [
+    query,
+    products,
+  ]);
   const categories = groupBy(products, (product) => product.category).map(([category, products]): [
     Product["category"],
     number,
@@ -62,6 +65,7 @@ export function useFilteredProducts(filters: Partial<Product> = {}) {
           fontWeight="500"
           height="100%"
           maxWidth={{base: "100%", sm: "140px"}}
+          paddingLeft={0}
           placeholder={t("common.categories")}
           value=""
           variant="unstyled"
@@ -85,6 +89,7 @@ export function useFilteredProducts(filters: Partial<Product> = {}) {
             top="inherit"
           />
           <Input
+            fontSize="md"
             paddingLeft={10}
             placeholder={t("filters.search")}
             value={query}

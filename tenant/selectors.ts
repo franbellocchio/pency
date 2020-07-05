@@ -1,33 +1,14 @@
-import {Tenant} from "./types";
-import {DEFAULT_TENANT} from "./constants";
+import {Field, ClientTenant} from "./types";
+import schemas from "./schemas";
 
-export function parseTenant(tenant: any): Tenant {
-  if (!tenant?.id || !tenant?.slug) {
-    throw new Error("Esta tienda es inválida");
-  }
+export function isMercadoPagoSelected(fields?: Field[]): boolean {
+  if (!Boolean(fields?.length)) return false;
 
-  return {
-    id: tenant.id,
-    slug: tenant.slug,
-    category: tenant.category || "",
-    color: tenant.color || DEFAULT_TENANT.color,
-    phone: tenant.phone || DEFAULT_TENANT.phone,
-    logo: tenant.logo || DEFAULT_TENANT.logo,
-    title: tenant.title || "",
-    instagram: tenant.instagram || DEFAULT_TENANT.instagram,
-    facebook: tenant.facebook || DEFAULT_TENANT.facebook,
-    twitter: tenant.twitter || DEFAULT_TENANT.twitter,
-    keywords: tenant.keywords || DEFAULT_TENANT.keywords,
-    banner: tenant.banner || DEFAULT_TENANT.banner,
-    description: tenant.description || "",
-    highlight: tenant.highlight || DEFAULT_TENANT.highlight,
-    fields: tenant.fields || DEFAULT_TENANT.fields,
-  };
+  const regexp = new RegExp(/mercado(\s{1})?pago/gim);
+
+  return fields.some((field) => field.value?.match(regexp));
 }
 
-export function formatTenant(tenant: Partial<Tenant>): Partial<Tenant> {
-  return {
-    ...DEFAULT_TENANT,
-    ...tenant,
-  };
+export function filterByRelevant(tenants: ClientTenant[]): ClientTenant[] {
+  return tenants.filter((tenant) => schemas.client.relevant.isValidSync(tenant));
 }

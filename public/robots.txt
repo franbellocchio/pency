@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /*/admin
+Disallow: /api
+Disallow: /[slug]
+
+Sitemap: https://pency.app/sitemap.xml

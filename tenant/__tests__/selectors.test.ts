@@ -1,98 +1,61 @@
 import produce from "immer";
 
-import {parseTenant, formatTenant} from "../selectors";
-import {DEFAULT_TENANT} from "../constants";
+import {isMercadoPagoSelected} from "../selectors";
 import mock from "../mock";
+import {RadioField} from "../types";
 
 describe("selectors", () => {
-  describe("formatTenant", () => {
-    it("should default to default tenant properties", () => {
-      const base = mock.full;
-      const actual = produce(base, (actual) => {
-        delete actual.banner;
-        delete actual.phone;
-        delete actual.color;
-        delete actual.title;
-        delete actual.description;
-        delete actual.category;
+  describe("isMercadoPagoSelected", () => {
+    it("should return true when Mercado Pago its selected", () => {
+      const base = mock.client.full.fields;
+      const actual = produce(base, (actual: RadioField[]) => {
+        actual[0].value = "Mercado Pago";
       });
-      const expected = {
-        ...base,
-        banner: DEFAULT_TENANT.banner,
-        phone: DEFAULT_TENANT.phone,
-        color: DEFAULT_TENANT.color,
-        title: DEFAULT_TENANT.title,
-        description: DEFAULT_TENANT.description,
-        category: DEFAULT_TENANT.category,
-      };
 
-      expect(formatTenant(actual)).toMatchObject(expected);
-    });
-  });
-
-  describe("parseTenant", () => {
-    describe("id", () => {
-      it("should throw when no id is present", () => {
-        const actual = {...mock.full, id: null};
-
-        expect(() => parseTenant(actual)).toThrowError("Esta tienda es inválida");
-      });
+      expect(isMercadoPagoSelected(actual)).toBe(true);
     });
 
-    describe("slug", () => {
-      it("should throw when no slug is present", () => {
-        const actual = {...mock.full, slug: null};
-
-        expect(() => parseTenant(actual)).toThrowError("Esta tienda es inválida");
+    it("should return true when MercadoPago its selected", () => {
+      const base = mock.client.full.fields;
+      const actual = produce(base, (actual: RadioField[]) => {
+        actual[0].value = "MercadoPago";
       });
+
+      expect(isMercadoPagoSelected(actual)).toBe(true);
     });
 
-    describe("color", () => {
-      it("should default a color", () => {
-        const base = mock.full;
-        const actual = produce(base, (actual) => {
-          delete actual.color;
-        });
-        const expected = {...base, color: DEFAULT_TENANT.color};
-
-        expect(parseTenant(actual)).toMatchObject(expected);
+    it("should return true when mercadopago its selected", () => {
+      const base = mock.client.full.fields;
+      const actual = produce(base, (actual: RadioField[]) => {
+        actual[0].value = "mercadopago";
       });
+
+      expect(isMercadoPagoSelected(actual)).toBe(true);
     });
 
-    describe("phone", () => {
-      it("should default a phone", () => {
-        const base = mock.full;
-        const actual = produce(base, (actual) => {
-          delete actual.phone;
-        });
-        const expected = {...base, phone: DEFAULT_TENANT.phone};
-
-        expect(parseTenant(actual)).toMatchObject(expected);
+    it("should return true when MERCADOPAGO its selected", () => {
+      const base = mock.client.full.fields;
+      const actual = produce(base, (actual: RadioField[]) => {
+        actual[0].value = "MERCADOPAGO";
       });
+
+      expect(isMercadoPagoSelected(actual)).toBe(true);
     });
 
-    describe("keywords", () => {
-      it("should default keywords", () => {
-        const base = mock.full;
-        const actual = produce(base, (actual) => {
-          delete actual.keywords;
-        });
-        const expected = {...base, keywords: DEFAULT_TENANT.keywords};
-
-        expect(parseTenant(actual)).toMatchObject(expected);
+    it("should return true when MERCADO PAGO its selected", () => {
+      const base = mock.client.full.fields;
+      const actual = produce(base, (actual: RadioField[]) => {
+        actual[0].value = "MERCADO PAGO";
       });
+
+      expect(isMercadoPagoSelected(actual)).toBe(true);
     });
 
-    describe("fields", () => {
-      it("should default fields", () => {
-        const base = mock.full;
-        const actual = produce(base, (actual) => {
-          delete actual.fields;
-        });
-        const expected = {...base, fields: DEFAULT_TENANT.fields};
+    it("should return false when not selected", () => {
+      const base = mock.client.full.fields;
+      const actual = isMercadoPagoSelected(base);
 
-        expect(parseTenant(actual)).toMatchObject(expected);
-      });
+      expect(actual).toBe(false);
     });
   });
 });

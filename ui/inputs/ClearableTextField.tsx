@@ -17,25 +17,48 @@ interface Props extends Omit<InputGroupProps, "children"> {
   onChange?: InputProps["onChange"];
   onClear?: VoidFunction;
   isReadOnly?: InputProps["isReadOnly"];
+  isDisabled?: InputProps["isDisabled"];
+  focusBorderColor?: InputProps["focusBorderColor"];
 }
 
 const ClearableTextField: React.FC<Props> = React.forwardRef(
-  ({name, placeholder, onChange, value, onClear, isReadOnly, ...props}, ref) => (
-    <InputGroup {...props}>
-      <Input
-        ref={ref}
-        isReadOnly={isReadOnly}
-        name={name}
-        paddingRight={10}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-      />
-      <InputRightElement backgroundColor="transparent">
-        <CloseButton onClick={onClear} />
-      </InputRightElement>
-    </InputGroup>
-  ),
+  (
+    {
+      name,
+      placeholder,
+      onChange,
+      value,
+      onClear,
+      isReadOnly,
+      isDisabled,
+      variant,
+      focusBorderColor,
+      ...props
+    },
+    ref,
+  ) => {
+    return (
+      <InputGroup {...props}>
+        <Input
+          ref={ref}
+          focusBorderColor={focusBorderColor}
+          isDisabled={isDisabled}
+          isReadOnly={isReadOnly}
+          name={name}
+          paddingRight={onClear ? 10 : "inherit"}
+          placeholder={placeholder}
+          value={value}
+          variant={variant}
+          onChange={onChange}
+        />
+        {onClear && (
+          <InputRightElement backgroundColor="transparent">
+            <CloseButton onClick={onClear} />
+          </InputRightElement>
+        )}
+      </InputGroup>
+    );
+  },
 );
 
 export default ClearableTextField;

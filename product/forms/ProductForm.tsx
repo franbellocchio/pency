@@ -1,6 +1,6 @@
 import React from "react";
-import {useForm, Controller, FormContext} from "react-hook-form";
-import {Flex, Stack, Text, Divider, FormLabel} from "@chakra-ui/core";
+import {useForm, Controller, FormContext, FieldError} from "react-hook-form";
+import {Flex, Stack, Text, Divider} from "@chakra-ui/core";
 
 import {Product} from "../types";
 import ProductVariantsInput, {
@@ -13,7 +13,7 @@ import Textarea from "~/ui/inputs/Textarea";
 import ImageInput from "~/ui/inputs/Image";
 import SwitchInput from "~/ui/inputs/Switch";
 import Price from "~/ui/inputs/Price";
-import FormControl from "~/ui/controls/FormControl";
+import FormControl from "~/ui/form/FormControl";
 
 interface Props {
   defaultValues?: Partial<Product>;
@@ -28,7 +28,8 @@ interface Props {
 
 const ProductForm: React.FC<Props> = ({defaultValues, children, onSubmit, categories}) => {
   const form = useForm<Partial<Product>>({defaultValues});
-  const {handleSubmit: submit, errors, register, formState, setValue, control} = form;
+  const {handleSubmit: submit, watch, errors, register, formState, setValue, control} = form;
+  const values = watch();
 
   function handleSubmit(values: Partial<Product>) {
     const product = {...defaultValues, ...values};
@@ -80,14 +81,14 @@ const ProductForm: React.FC<Props> = ({defaultValues, children, onSubmit, catego
               />
             </FormControl>
             <FormControl
-              error={errors.description && "La descripción no puede ser mayor a 280 caracteres"}
-              help="Máximo 280 caracteres"
+              error={errors.description && "La descripción no puede ser mayor a 1400 caracteres"}
+              help="Máximo 1400 caracteres"
               label="Descripción"
               name="description"
             >
               <Textarea
-                ref={register({maxLength: 280})}
-                maxLength={280}
+                ref={register({maxLength: 1400})}
+                maxLength={1400}
                 name="description"
                 placeholder="64GB mem. Silver."
                 variant="filled"
@@ -108,7 +109,7 @@ const ProductForm: React.FC<Props> = ({defaultValues, children, onSubmit, catego
             </FormControl>
             <FormControl
               isRequired
-              error={errors.category?.message && "Este campo es requerido"}
+              error={errors.category && "Este campo es requerido"}
               help="Ayudá a tus clientes a encontrar más rápido tus productos."
               label="Categoría"
               name="category"
@@ -135,35 +136,25 @@ const ProductForm: React.FC<Props> = ({defaultValues, children, onSubmit, catego
             </FormControl>
             <Stack isInline spacing={8}>
               <FormControl error={errors.featured?.message} name="featured">
-                <Stack isInline alignItems="center">
-                  <Controller
-                    as={SwitchInput}
-                    color="primary"
-                    control={control}
-                    defaultValue={false}
-                    display="block"
-                    id="featured"
-                    name="featured"
-                  />
-                  <FormLabel cursor="pointer" fontWeight="normal" htmlFor="featured" padding={0}>
-                    Destacar
-                  </FormLabel>
-                </Stack>
+                <Controller
+                  as={SwitchInput}
+                  color="primary"
+                  control={control}
+                  defaultValue={false}
+                  display="block"
+                  label="Destacar"
+                  name="featured"
+                />
               </FormControl>
               <FormControl error={errors.available?.message} name="available">
-                <Stack isInline alignItems="center">
-                  <Controller
-                    as={SwitchInput}
-                    color="primary"
-                    control={control}
-                    display="block"
-                    id="available"
-                    name="available"
-                  />
-                  <FormLabel cursor="pointer" fontWeight="normal" htmlFor="available" padding={0}>
-                    Disponible
-                  </FormLabel>
-                </Stack>
+                <Controller
+                  as={SwitchInput}
+                  color="primary"
+                  control={control}
+                  display="block"
+                  label="Disponible"
+                  name="available"
+                />
               </FormControl>
             </Stack>
             <Divider />
@@ -173,8 +164,9 @@ const ProductForm: React.FC<Props> = ({defaultValues, children, onSubmit, catego
             <FormControl name="options">
               <Controller
                 as={ProductVariantsInput}
+                base={values?.price}
                 control={control}
-                error={(errors.options as any)?.type}
+                error={(errors.options as unknown) as FieldError}
                 name="options"
                 rules={{
                   validate: ProductVariantsInputValidator,
