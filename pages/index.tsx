@@ -34,7 +34,7 @@ export const getStaticProps: GetStaticProps = async () => {
   }
 
   // Get stores from api
-  const tenants: ClientTenant[] = await fetch("GET", `${process.env.APP_URL}/api/tenant`);
+  const tenants: ClientTenant[] = [];
 
   // Get just important ones
   const filtered = filterByRelevant(tenants);
