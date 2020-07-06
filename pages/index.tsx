@@ -3,7 +3,6 @@ import fs from "fs";
 import React from "react";
 import {GetStaticProps} from "next";
 
-import fetch from "~/utils/fetch";
 import LandingScreen from "~/app/screens/Landing";
 import LandingLayout from "~/app/layouts/LandingLayout";
 import {Provider as I18nProvider} from "~/i18n/context";
