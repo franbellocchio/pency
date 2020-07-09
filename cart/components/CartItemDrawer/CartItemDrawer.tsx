@@ -15,24 +15,29 @@ import {useTranslation} from "~/i18n/hooks";
 import {useToast} from "~/hooks/toast";
 import ShareIcon from "~/ui/icons/Share";
 import {useAnalytics} from "~/analytics/hooks";
+import Textarea from "~/ui/inputs/Textarea";
+import FormControl from "~/ui/form/FormControl";
+import {useTenant} from "~/tenant/hooks";
 
 interface Props extends Omit<IDrawer, "children"> {
-  onSubmit: (product: Product, options: Variant[], count: number) => void;
+  onSubmit: (product: Product, options: Variant[], count: number, note: string) => void;
   product: Product;
 }
 
 const CartItemDrawer: React.FC<Props> = ({onClose, product, onSubmit, ...props}) => {
   const [count, setCount] = React.useState(1);
+  const [note, setNote] = React.useState("");
   const t = useTranslation();
   const log = useAnalytics();
   const toast = useToast();
+  const {flags} = useTenant();
   const canShare = {
     prompt: Boolean(navigator?.share),
     clipboard: Boolean(navigator?.clipboard),
   };
 
   function handleSubmit(options: Variant[]) {
-    onSubmit(product, options, count);
+    onSubmit(product, options, count, note);
   }
 
   function handleShare() {
@@ -45,9 +50,9 @@ const CartItemDrawer: React.FC<Props> = ({onClose, product, onSubmit, ...props})
         })
         .then(() => {
           toast({
-            status: "success",
-            title: "Bien!",
-            description: "El enlace fue compartido correctamente",
+            status: t("cartItemDrawer.toastSharePrompt.status"),
+            title: t("cartItemDrawer.toastSharePrompt.title"),
+            description: t("cartItemDrawer.toastSharePrompt.description"),
           });
 
           log.share(product, "mobile");
@@ -60,21 +65,25 @@ const CartItemDrawer: React.FC<Props> = ({onClose, product, onSubmit, ...props})
         .writeText(window.location.href)
         .then(() => {
           toast({
-            status: "success",
-            title: "Link copiado",
-            description: "El link se copió al portapapeles",
+            status: t("cartItemDrawer.toastShareClipboard.status"),
+            title: t("cartItemDrawer.toastShareClipboard.title"),
+            description: t("cartItemDrawer.toastShareClipboard.description"),
           });
 
           log.share(product, "desktop");
         })
         .catch(() => {
           toast({
-            status: "warning",
-            title: "No se pudo copiar el link",
-            description: "No se tienen permisos para acceder al portapapeles en este navegador",
+            status: t("cartItemDrawer.toastShareError.status"),
+            title: t("cartItemDrawer.toastShareError.title"),
+            description: t("cartItemDrawer.toastShareError.description"),
           });
         });
     }
+  }
+
+  function handleNoteChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setNote(event.target.value);
   }
 
   React.useLayoutEffect(() => {
@@ -140,9 +149,19 @@ const CartItemDrawer: React.FC<Props> = ({onClose, product, onSubmit, ...props})
                   </Stack>
                   {form}
                   <Flex alignItems="center" justifyContent="space-between">
-                    <FormLabel>{t("common.count")}</FormLabel>
+                    <FormLabel padding={0}>{t("common.count")}</FormLabel>
                     <Stepper min={1} value={count} onChange={setCount} />
                   </Flex>
+                  {flags.includes("note") && (
+                    <FormControl help="Máximo 140 caracteres" label="Comentarios">
+                      <Textarea
+                        max={140}
+                        placeholder="Notas adicionales"
+                        value={note}
+                        onChange={handleNoteChange}
+                      />
+                    </FormControl>
+                  )}
                 </Stack>
               </DrawerBody>
               <DrawerFooter>
@@ -151,6 +170,7 @@ const CartItemDrawer: React.FC<Props> = ({onClose, product, onSubmit, ...props})
                   items={[
                     {
                       id: "temp",
+                      note: "",
                       product,
                       variants,
                       count,

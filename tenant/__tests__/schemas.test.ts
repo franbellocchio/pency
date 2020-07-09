@@ -463,86 +463,43 @@ describe("schemas", () => {
 
         expect(schemas.client.fetch.cast(actual)).toEqual(expected);
       });
-    });
 
-    describe("relevant", () => {
-      it("should match when relevant fields are required", () => {
+      it("should return false when mercadopago is not valid", () => {
         const actual = {
           id: "some-id",
           slug: "some-slug",
-          category: "some-category",
           color: "teal",
+          phone: 1144444444,
+          highlight: "Some highlight",
+          flags: [1, 2, 3],
+          mercadopago: {
+            expiration: null,
+            refresh: "",
+            token: "",
+          },
+        };
+        const expected = {
+          ...actual,
           phone: "1144444444",
-          logo: "some-logo",
-          description: "some description",
-          title: "some title",
+          banner: "",
+          category: "",
+          country: "AR",
+          description: "",
+          facebook: "",
+          fields: [],
+          flags: ["1", "2", "3"],
+          hook: "",
+          instagram: "",
+          keywords: "",
+          location: null,
+          layout: "portrait",
+          logo: "",
+          mercadopago: false,
+          title: "",
+          twitter: "",
         };
-        const expected = true;
 
-        expect(schemas.client.relevant.isValidSync(actual)).toEqual(expected);
-      });
-
-      it("should not match when logo is not provided", () => {
-        const actual = {
-          id: "some-id",
-          slug: "some-slug",
-          category: "some-category",
-          color: "teal",
-          phone: "1144444444",
-          description: "some description",
-          title: "some title",
-        };
-        const expected = false;
-
-        expect(schemas.client.relevant.isValidSync(actual)).toEqual(expected);
-      });
-
-      it("should not match when number is 5491173694572", () => {
-        const actual = {
-          id: "some-id",
-          slug: "some-slug",
-          category: "some-category",
-          color: "teal",
-          phone: "5491173694572",
-          logo: "some-logo",
-          description: "some description",
-          title: "some title",
-        };
-        const expected = false;
-
-        expect(schemas.client.relevant.isValidSync(actual)).toEqual(expected);
-      });
-
-      it("should not match when description is Armá tu tienda y recibí los pedidos via WhatsApp", () => {
-        const actual = {
-          id: "some-id",
-          slug: "some-slug",
-          category: "some-category",
-          color: "teal",
-          phone: "5491144444444",
-          logo: "some-logo",
-          description: "Armá tu tienda y recibí los pedidos via WhatsApp",
-          title: "some title",
-        };
-        const expected = false;
-
-        expect(schemas.client.relevant.isValidSync(actual)).toEqual(expected);
-      });
-
-      it("should not match when title is Pency - Tu tienda online fácil", () => {
-        const actual = {
-          id: "some-id",
-          slug: "some-slug",
-          category: "some-category",
-          color: "teal",
-          phone: "5491144444444",
-          logo: "some-logo",
-          description: "description",
-          title: "Pency - Tu tienda online fácil",
-        };
-        const expected = false;
-
-        expect(schemas.client.relevant.isValidSync(actual)).toEqual(expected);
+        expect(schemas.client.fetch.cast(actual)).toEqual(expected);
       });
     });
   });

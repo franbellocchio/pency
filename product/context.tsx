@@ -2,7 +2,7 @@ import React from "react";
 
 import {Product} from "./types";
 import api from "./api/client";
-import {filterByPriceChanged} from "./selectors";
+import schemas from "./schemas";
 
 import {useToast} from "~/hooks/toast";
 import {useTenant} from "~/tenant/hooks";
@@ -16,9 +16,7 @@ export interface Context {
     create: (product: Product) => Promise<void>;
     update: (product: Product) => Promise<void>;
     remove: (id: Product["id"]) => Promise<void>;
-    bulk: {
-      update: (products: Product[]) => Promise<void>;
-    };
+    upsert: (products: Product[]) => Promise<void>;
   };
 }
 interface Props {
@@ -35,8 +33,10 @@ const ProductProvider: React.FC<Props> = ({initialValues, children}) => {
   );
 
   function create(product: Product) {
+    const casted = schemas.client.create.cast(product);
+
     return api
-      .create(tenant.id, product)
+      .create(tenant.id, casted)
       .then((product) => {
         setProducts(products.concat(product));
 
@@ -56,11 +56,13 @@ const ProductProvider: React.FC<Props> = ({initialValues, children}) => {
   }
 
   function update(product: Product) {
+    const casted = schemas.client.update.cast(product);
+
     return api
-      .update(tenant.id, product)
+      .update(tenant.id, casted)
       .then(() => {
         setProducts((products) =>
-          products.map((_product) => (_product.id === product.id ? product : _product)),
+          products.map((_product) => (_product.id === casted.id ? casted : _product)),
         );
 
         toast({
@@ -79,25 +81,31 @@ const ProductProvider: React.FC<Props> = ({initialValues, children}) => {
       });
   }
 
-  function bulkUpdate(changed: Product[]) {
-    const diff = filterByPriceChanged(changed, products);
+  function upsert(products: Product[]) {
+    const casted = products.map((product) =>
+      product.id ? schemas.client.update.cast(product) : schemas.client.create.cast(product),
+    );
 
-    return api.bulk
-      .update(tenant.id, diff)
-      .then(() => {
-        diff.forEach((product) => {
-          setProducts((products) =>
-            products.map((_product) => (_product.id === product.id ? product : _product)),
-          );
-        });
+    return api
+      .upsert(tenant.id, casted)
+      .then((products) => {
+        // Store changed ids
+        const ids = products.map((product) => product.id);
 
+        // Remove all changed and concat new products
+        setProducts((_products) =>
+          _products.filter((_product) => !ids.includes(_product.id)).concat(products),
+        );
+
+        // Notify the user
         toast({
           title: "Productos actualizados",
-          description: `${diff.length} de tus productos fueron actualizados correctamente`,
+          description: `${products.length} de tus productos fueron actualizados correctamente`,
           status: "success",
         });
       })
       .catch(() => {
+        // If something failed, notify the user
         toast({
           title: "Error",
           description:
@@ -134,9 +142,7 @@ const ProductProvider: React.FC<Props> = ({initialValues, children}) => {
     create,
     update,
     remove,
-    bulk: {
-      update: bulkUpdate,
-    },
+    upsert,
   };
 
   return <ProductContext.Provider value={{state, actions}}>{children}</ProductContext.Provider>;

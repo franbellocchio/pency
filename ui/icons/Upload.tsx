@@ -5,11 +5,11 @@ interface Props extends Omit<BoxProps, "size"> {
   size?: number;
 }
 
-const HelpCircleIcon: React.FC<Props> = ({size = 24, ...props}) => {
+const UploadIcon: React.FC<Props> = ({size = 24, ...props}) => {
   return (
     <Box {...props}>
       <svg
-        className="feather feather-help-circle"
+        className="feather feather-upload"
         fill="none"
         height={size}
         stroke="currentColor"
@@ -20,12 +20,12 @@ const HelpCircleIcon: React.FC<Props> = ({size = 24, ...props}) => {
         width={size}
         xmlns="http://www.w3.org/2000/svg"
       >
-        <circle cx="12" cy="12" r="10" />
-        <path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3" />
-        <path d="M12 17L12.01 17" />
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+        <path d="M17 8L12 3 7 8" />
+        <path d="M12 3L12 15" />
       </svg>
     </Box>
   );
 };
 
-export default HelpCircleIcon;
+export default UploadIcon;

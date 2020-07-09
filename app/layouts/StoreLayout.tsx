@@ -17,9 +17,18 @@ const StoreLayout: React.FC<Props> = ({tenant, product, children}) => (
   <>
     <Global
       styles={css`
+        body {
+          min-height: 100vh;
+          min-height: -webkit-fill-available;
+          height: 100%;
+        }
+
+        html {
+          height: -webkit-fill-available;
+        }
+
         html,
         body {
-          height: 100%;
           width: 100%;
           max-width: 100vw;
           overscroll-behavior: contain;
@@ -47,6 +56,7 @@ const StoreLayout: React.FC<Props> = ({tenant, product, children}) => (
     <Head>
       <link href={META.favicon} rel="icon" />
       <link href={tenant.logo || META.appleicon} rel="apple-touch-icon" />
+      <link href={`${META.url}/${tenant.slug}`} rel="canonical" />
       <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;700&display=swap"
         rel="stylesheet"

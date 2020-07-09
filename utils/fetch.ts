@@ -7,9 +7,11 @@ export default function fetch(
   path: string,
   body: Record<string, any> = null,
   headers: Record<string, any> = {},
+  mode: RequestInit["mode"] = "cors",
 ) {
   return unfetch(path, {
     method: method,
+    mode,
     headers: {
       "content-type": "application/json",
       Authorization: process.browser ? window.localStorage.getItem("token") : null,
@@ -22,7 +24,7 @@ export default function fetch(
       // Omit 401 and 404 errors as we don't want to report those
       if (![401, 404].includes(error?.status)) {
         // Report fetch failure
-        reporter.report(error, {
+        reporter.message(error?.message || error?.statusText || "Error on fetch util", {
           origin: `fetch_util`,
           extras: {
             method,
