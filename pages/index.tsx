@@ -35,26 +35,18 @@ export const getStaticProps: GetStaticProps = async () => {
   // Get stores from api
   const tenants: ClientTenant[] = [];
 
-    // Get just important ones
-    const filtered = filterByRelevant(tenants);
+  // Get just important ones
+  const filtered = filterByRelevant(tenants);
 
-    // Build sitemap
-    fs.writeFileSync("public/sitemap.xml", buildSitemap(filtered));
+  // Build sitemap
+  fs.writeFileSync("public/sitemap.xml", buildSitemap(filtered));
 
-    // Return stores so we can build a directory
-    return {
-      props: {
-        tenants: filtered,
-      },
-    };
-  } catch (e) {
-    // Allow this to fail
-    return {
-      props: {
-        tenants: [],
-      },
-    };
-  }
+  // Return stores so we can build a directory
+  return {
+    props: {
+      tenants: filtered,
+    },
+  };
 };
 
 export default LandingRoute;
