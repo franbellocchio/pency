@@ -1,6 +1,6 @@
 import React from "react";
 import App from "next/app";
-import {ThemeProvider, CSSReset} from "@chakra-ui/core";
+import {ThemeProvider, CSSReset, Flex} from "@chakra-ui/core";
 
 import ErrorScreen from "./_error";
 
@@ -15,15 +15,6 @@ process.on("uncaughtException", (error: Error) => {
 });
 
 export default class Pency extends App {
-  componentDidMount() {
-    /**
-     * This help us fix a bug in embed browsers like
-     * the Instagram one where the bottom bar chops
-     * the review order button
-     */
-    require("viewport-units-buggyfill").init();
-  }
-
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     reporter.exception(error, {extras: errorInfo, origin: "client"});
 
@@ -37,7 +28,13 @@ export default class Pency extends App {
     return (
       <ThemeProvider>
         <CSSReset />
-        {error ? <ErrorScreen statusCode={error} /> : <Component {...pageProps} />}
+        {error ? (
+          <ErrorScreen statusCode={error} />
+        ) : (
+          <Flex direction="column" height="100%">
+            <Component {...pageProps} />
+          </Flex>
+        )}
       </ThemeProvider>
     );
   }
