@@ -169,6 +169,82 @@ describe("schemas", () => {
 
         expect(schemas.server.fetch.isValidSync(actual)).toEqual(expected);
       });
+
+      it("PENCY-39 - Cache case", () => {
+        const actual = {
+          category: "clothes-accessories",
+          slug: "paroditas",
+          layout: "portrait",
+          description:
+            "Somos una tienda de venta de indumentaria pedidos de lunes a viernes de 9 a 18 hr.",
+          phone: "01157499042",
+          color: "blue",
+          country: "AR",
+          twitter: "",
+          title: "Paroditas indumentaria",
+          highlight: "Solo se despacharan pedidos hecho por via whatsapp",
+          hook: "",
+          facebook: "Paroditas indumentaria",
+          location: {
+            coordinates: {
+              lng: -58.23555589999999,
+              lat: -34.7243844,
+            },
+            address: "Av. Mozart, Quilmes, Provincia de Buenos Aires",
+          },
+          fields: [
+            {
+              required: true,
+              id: "GHf75oAmx",
+              type: "radio",
+              title: "Forma de pago",
+              options: [
+                {
+                  note: "",
+                  id: "rPbhrwHt10",
+                  title: "Efectivo",
+                },
+                {
+                  id: "izPPtnyHUd",
+                  title: "Tarjetas",
+                  note: "",
+                },
+              ],
+            },
+          ],
+          keywords: "Paroditas shop",
+          flags: [],
+          mercadopago: null,
+          banner:
+            "https://res.cloudinary.com/goncy/image/upload/v1593959210/pency/paroditas/phtzirdrfva8hsqgqkaj.jpg",
+          id: "3wo9AMAWUNPtGeFuppubZw7dEBr1",
+          logo:
+            "https://res.cloudinary.com/goncy/image/upload/v1593959197/pency/paroditas/xww2ij6tw0fjal9trjgs.jpg",
+          instagram: "Paroditas indumentaria ",
+        };
+        const expected = true;
+
+        expect(schemas.server.fetch.isValidSync(actual)).toEqual(expected);
+      });
+
+      it("PENCY-40 - Cache case", () => {
+        const actual = {
+          description: "Armá tu tienda y recibí los pedidos via WhatsApp",
+          title: "Pency - Tu tienda online fácil",
+          color: "cyan",
+          twitter: null,
+          slug: "zerditos",
+          phone: 5491144444444,
+          facebook: null,
+          keywords: "pency, tienda, online, whatsapp, delivery, pedidos",
+          message: "Hola, quería pedir:\n\n{{productos}}\n\nTotal: {{total}}\n\nGracias.",
+          id: "QoBu9gs6Z9ZixHmQvgMMLD6QdPm1",
+          instagram: null,
+        };
+        const expected = true;
+
+        expect(schemas.server.fetch.isValidSync(actual)).toEqual(expected);
+      });
     });
 
     describe("update", () => {

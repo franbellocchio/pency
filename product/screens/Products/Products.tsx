@@ -21,14 +21,14 @@ import Content from "~/ui/structure/Content";
 import SummaryButton from "~/cart/components/SummaryButton";
 import CartItemDrawer from "~/cart/components/CartItemDrawer";
 import {Product, Variant} from "~/product/types";
-import {useAnalytics} from "~/analytics/hooks";
+import {isIOSInstagramBrowser} from "~/app/selectors";
 
 const ProductsScreen: React.FC = () => {
   const {
     query: {product},
     push,
   } = useRouter();
-  const log = useAnalytics();
+  const isInstagramBrowser = isIOSInstagramBrowser();
   const {add, increase, decrease, items, checkout} = useCart();
   const t = useTranslation();
   const {isOpen: isCartOpen, onOpen: openCart, onClose: closeCart} = useDisclosure();
@@ -50,8 +50,6 @@ const ProductsScreen: React.FC = () => {
 
   function handleOpenCart() {
     openCart();
-
-    log.viewCart(items);
   }
 
   function handleCloseSelected() {
@@ -98,17 +96,19 @@ const ProductsScreen: React.FC = () => {
                   {highlight}
                 </Box>
               )}
-              <Box marginBottom={{base: 5, sm: 10}}>
-                <Flex
-                  backgroundColor="gray.50"
-                  data-test-id="filters"
-                  roundedBottom="lg"
-                  roundedTop={highlight ? "none" : "lg"}
-                >
-                  <Box paddingX={4} paddingY={1}>
-                    {filters}
-                  </Box>
-                </Flex>
+              <Box
+                backgroundColor="gray.50"
+                data-test-id="filters"
+                marginBottom={{base: 5, sm: 10}}
+                paddingX={4}
+                paddingY={1}
+                position="sticky"
+                roundedBottom="lg"
+                roundedTop={highlight ? "none" : "lg"}
+                top={isInstagramBrowser ? 12 : 0}
+                zIndex={3}
+              >
+                {filters}
               </Box>
               <Box marginBottom={4} paddingX={{base: 4, sm: 0}}>
                 <Stack margin="auto" spacing={5} width="100%">
