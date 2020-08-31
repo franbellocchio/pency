@@ -4299,7 +4299,7 @@ const api = {
         );
     });
 
-    return batch.commit()
+    return batch.commit() as any;
   },
 };
 
