@@ -76,27 +76,22 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const {
       query: {tenant},
       body: {product},
-      // headers: {authorization: token},
+      headers: {authorization: token},
     } = req as PostRequest;
 
     if (!tenant) return res.status(304).end();
 
-    //return sessionApi
-      //.verify(token)
-      //.then(({uid}) => {
-        //if (uid !== tenant) return res.status(403).end();
+    return sessionApi
+      .verify(token)
+      .then(({uid}) => {
+        if (uid !== tenant) return res.status(403).end();
 
-        //return api
-          //.create(tenant, product)
-          //.then((product) => res.status(200).json(product))
-          //.catch(() => res.status(400).end("Hubo un error creando el producto"));
-      //})
-      //.catch(() => res.status(401).end("La sesión expiró, volvé a iniciar sesión para continuar"));
-    
-    return api
+        return api
           .create(tenant, product)
           .then((product) => res.status(200).json(product))
           .catch(() => res.status(400).end("Hubo un error creando el producto"));
+      })
+      .catch(() => res.status(401).end("La sesión expiró, volvé a iniciar sesión para continuar"));
   }
 
   if (req.method === "PATCH") {
