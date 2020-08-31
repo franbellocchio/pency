@@ -4,7 +4,7 @@ import {Product} from "../../types";
 import api from "../../api/server";
 
 import {ClientTenant} from "~/tenant/types";
-// import sessionApi from "~/session/api/server";
+import sessionApi from "~/session/api/server";
 
 interface GetRequest extends NextApiRequest {
   query: {
