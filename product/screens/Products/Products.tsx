@@ -21,14 +21,14 @@ import Content from "~/ui/structure/Content";
 import SummaryButton from "~/cart/components/SummaryButton";
 import CartItemDrawer from "~/cart/components/CartItemDrawer";
 import {Product, Variant} from "~/product/types";
-import {isIOSInstagramBrowser} from "~/app/selectors";
+import CategoryBlock from "~/product/components/CategoryBlock";
 
 const ProductsScreen: React.FC = () => {
   const {
     query: {product},
     push,
   } = useRouter();
-  const isInstagramBrowser = isIOSInstagramBrowser();
+  const [toggled, setToggled] = React.useState<string | null>();
   const {add, increase, decrease, items, checkout} = useCart();
   const t = useTranslation();
   const {isOpen: isCartOpen, onOpen: openCart, onClose: closeCart} = useDisclosure();
@@ -74,6 +74,10 @@ const ProductsScreen: React.FC = () => {
     );
   }
 
+  function handleToggle(category) {
+    setToggled(toggled === category ? null : category);
+  }
+
   return (
     <>
       <Flex direction="column" height="100%">
@@ -105,7 +109,7 @@ const ProductsScreen: React.FC = () => {
                 position="sticky"
                 roundedBottom="lg"
                 roundedTop={highlight ? "none" : "lg"}
-                top={isInstagramBrowser ? 12 : 0}
+                top={0}
                 zIndex={3}
               >
                 {filters}
@@ -131,16 +135,30 @@ const ProductsScreen: React.FC = () => {
                       {productsByCategory.map(([category, products]) => {
                         return (
                           <PseudoBox key={category} as="section" id={category}>
-                            <ProductsGrid data-test-id="category" layout={layout} title={category}>
-                              {products.map((product) => (
-                                <ProductCard
-                                  key={product.id}
+                            <CategoryBlock
+                              category={category}
+                              cursor="pointer"
+                              image={products.find((product) => product.image)?.image}
+                              note={`(${products.length})`}
+                              onClick={() => handleToggle(category)}
+                            >
+                              {toggled === category ? (
+                                <ProductsGrid
+                                  data-test-id="category"
                                   layout={layout}
-                                  product={product}
-                                  onClick={() => handleSelect(product)}
-                                />
-                              ))}
-                            </ProductsGrid>
+                                  title={category}
+                                >
+                                  {products.map((product) => (
+                                    <ProductCard
+                                      key={product.id}
+                                      layout={layout}
+                                      product={product}
+                                      onClick={() => handleSelect(product)}
+                                    />
+                                  ))}
+                                </ProductsGrid>
+                              ) : null}
+                            </CategoryBlock>
                           </PseudoBox>
                         );
                       })}
